@@ -38,8 +38,8 @@ public class TweetMapper extends Mapper<LongWritable, Text, Text, LongWritable> 
 			String res = name + " (" + location + ")";
 
 			// Remove newlines and carriage returns
-			res = res.replace("\n", " ");
-			res = res.replace("\r", " ");
+			res = res.replaceAll("\n", " ");
+			res = res.replaceAll("\r", " ");
 
 			// Fix ridiculous bug
 			// Uncomment this line and the last test will fail

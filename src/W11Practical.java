@@ -34,8 +34,11 @@ public class W11Practical {
 		FileInputFormat.setInputPaths(job, new Path(input_path));
 		FileOutputFormat.setOutputPath(job, new Path(output_path));
 
-		// Set our own ScanWordsMapper as the mapper
-		job.setMapperClass(TweetMapper.class);
+		// Set our own TweetMapper/LocationMapper as the mapper
+		if (args.length >= 3 && args[2].equals("location")) {
+			job.setMapperClass(LocationMapper.class);
+		} else
+			job.setMapperClass(TweetMapper.class);
 
 		// Specify output types produced by mapper (words with count of 1)
 		job.setMapOutputKeyClass(Text.class);
