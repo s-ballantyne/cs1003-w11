@@ -4,6 +4,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapred.LocalJobRunner;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.Job;
@@ -22,6 +23,7 @@ public class W11Practical {
 
 		String input_path = args[0];
 		String output_path = args[1];
+		int threads = args.length >= 3 ? Integer.parseInt(args[2]) : 0;
 
 		// Set HADOOP_HOME
 		System.setProperty("hadoop.home.dir", "/");
@@ -35,7 +37,7 @@ public class W11Practical {
 		FileOutputFormat.setOutputPath(job, new Path(output_path));
 
 		// Set our own TweetMapper/LocationMapper as the mapper
-		if (args.length >= 3 && args[2].equals("location")) {
+		if (args.length >= 4 && args[4].equals("location")) {
 			job.setMapperClass(LocationMapper.class);
 		} else
 			job.setMapperClass(TweetMapper.class);
@@ -50,6 +52,13 @@ public class W11Practical {
 		// Specify the output types produced by reducer (words with total counts)
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(LongWritable.class);
+
+		// Set concurrency
+		if (threads > 0) {
+			System.out.println("Setting max running maps, reduces to " + threads);
+			LocalJobRunner.setLocalMaxRunningMaps(job, threads);
+			LocalJobRunner.setLocalMaxRunningReduces(job, threads);
+		}
 		
 		try {
 			job.waitForCompletion(true);
